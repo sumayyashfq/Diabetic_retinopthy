@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetes Retinopathy Prediction</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🩺 Diabetes Retinopathy Prediction</h1>
+        <p class="subtitle">
+            Upload a retinal fundus image to predict the DR stage
+        </p>
+
+        <!-- Upload Section -->
+        <div class="upload-box">
+            <input type="file" id="imageInput" accept="image/*">
+            <button onclick="predictDR()">Predict</button>
+        </div>
+
+        <!-- Levels Info Section -->
+        <h2>Severity Levels</h2>
+        <div class="cards">
+            <div class="card no-dr">
+                <h3>No DR</h3>
+            </div>
+
+            <div class="card mild">
+                <h3>Mild DR</h3>
+            </div>
+
+            <div class="card moderate">
+                <h3>Moderate DR</h3>
+            </div>
+
+            <div class="card severe">
+                <h3>Severe DR</h3>
+            </div>
+
+            <div class="card proliferative">
+                <h3>Proliferative DR</h3>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+}
+
+.subtitle {
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.upload-box {
+    background: white;
+    padding: 25px;
+    width: 50%;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.upload-box input {
+    margin-bottom: 15px;
+}
+
+.upload-box button {
+    padding: 10px 25px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 180px;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    margin-bottom: 15px;
+}
+
+.card button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    font-weight: bold;
+}
+
+.no-dr {
+    background: #2ecc71;
+}
+
+.mild {
+    background: #f1c40f;
+}
+
+.moderate {
+    background: #e67e22;
+}
+
+.severe {
+    background: #e74c3c;
+}
+
+.proliferative {
+    background: #c0392b;
+}
+
+/* Metric Cards */
+.metrics-grid {
+    margin-top: 20px;
+}
+
+.metric-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 150px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.metric-card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+}
+
+.metric-card p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0 0 0;
+}

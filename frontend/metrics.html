@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Image Diagnostic Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 Image-Specific Diagnostic Analysis</h1>
+        <p class="subtitle" id="image-name-header">Detailed performance breakdown for the current retina analysis.</p>
+
+        <div style="margin-bottom: 30px;">
+            <a href="index.html"><button style="background: #34495e;">Analyze New Image</button></a>
+        </div>
+
+        <!-- Prediction-Specific Metrics Section -->
+        <h2 style="margin-top: 20px;">Diagnostic Reliability (for <span id="pred-stage-name">--</span>)</h2>
+        <p style="font-size: 0.9em; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">These statistics show how
+            well the model historically performs for the detected stage.</p>
+        <div class="metrics-grid"
+            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+            <div class="metric-card" style="width: 140px; padding: 15px;">
+                <h3>Image Confidence</h3>
+                <p id="img-conf" style="font-size: 1.5em; color: #2ecc71;">--</p>
+            </div>
+            <div class="metric-card" style="width: 140px; padding: 15px;">
+                <h3>Stage Precision</h3>
+                <p id="model-prec" style="font-size: 1.5em; color: #3498db;">--</p>
+            </div>
+            <div class="metric-card" style="width: 140px; padding: 15px;">
+                <h3>Stage Recall</h3>
+                <p id="model-rec" style="font-size: 1.5em; color: #f39c12;">--</p>
+            </div>
+            <div class="metric-card" style="width: 140px; padding: 15px;">
+                <h3>Stage F1 Score</h3>
+                <p id="model-f1" style="font-size: 1.5em; color: #e74c3c;">--</p>
+            </div>
+        </div>
+
+        <!-- Visual Analysis -->
+        <div
+            style="display: flex; gap: 40px; justify-content: center; align-items: flex-start; flex-wrap: wrap; margin-bottom: 50px;">
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0;">Analyzed Patient Image</h3>
+                <img id="patient-img" src="" alt="Analyzed Retina"
+                    style="max-width: 350px; border-radius: 8px; border: 1px solid #ddd;">
+            </div>
+
+            <div
+                style="flex: 1; min-width: 300px; max-width: 500px; text-align: left; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0;">Diagnostic Distribution (Confusion Insight)</h3>
+                <div id="prob-breakdown">
+                    <!-- Bars will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Image-Specific Charts Section -->
+        <h2 style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">Image-Wise Performance Visuals</h2>
+        <div class="charts-container"
+            style="display: flex; gap: 40px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
+            <div class="chart-box"
+                style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0;" id="cm-title">Image Diagnostic Matrix</h3>
+                <img id="cm-img" src="" alt="Confusion Matrix" style="width: 480px; border-radius: 8px;">
+                <p style="font-size: 0.8em; color: #666; margin-top: 10px;">* Focusing on predicted stage reliability.
+                </p>
+            </div>
+            <div class="chart-box"
+                style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0;" id="auc-title">Image specific AUC Curve</h3>
+                <img id="auc-img" src="" alt="AUC Curve" style="width: 480px; border-radius: 8px;">
+                <p style="font-size: 0.8em; color: #666; margin-top: 10px;">* Highlighting stage-specific performance.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resultData = JSON.parse(sessionStorage.getItem('predictionResult'));
+
+        if (resultData) {
+            const prediction = resultData.prediction;
+            const confidenceStr = resultData.confidence;
+            const imageUrl = resultData.image_url;
+            const metrics = resultData.metrics;
+            const plots = resultData.plots;
+
+            // 1. Populate Prediction-Specific Metrics
+            document.getElementById('pred-stage-name').innerText = prediction || "N/A";
+            document.getElementById('img-conf').innerText = confidenceStr || "--";
+
+            if (metrics) {
+                document.getElementById('model-prec').innerText = metrics.precision || "--";
+                document.getElementById('model-rec').innerText = metrics.recall || "--";
+                document.getElementById('model-f1').innerText = metrics.f1_score || "--";
+            }
+
+            // 2. Headings and Image
+            document.getElementById('image-name-header').innerText = `Diagnostic analysis for: ${imageUrl.split('/').pop()}`;
+            if (imageUrl) {
+                document.getElementById('patient-img').src = imageUrl;
+            }
+
+            // 3. Build Probability Bars (Local Confusion Insight)
+            if (metrics && metrics.probabilities) {
+                const probBox = document.getElementById('prob-breakdown');
+                probBox.innerHTML = "";
+
+                const classColors = {
+                    "No DR": "#2ecc71",
+                    "Mild DR": "#f1c40f",
+                    "Moderate DR": "#e67e22",
+                    "Severe DR": "#e74c3c",
+                    "Proliferative DR": "#c0392b"
+                };
+
+                Object.entries(metrics.probabilities).forEach(([cls, prob]) => {
+                    const probVal = parseFloat(prob);
+                    const color = classColors[cls] || "#3498db";
+                    const isSelected = (cls === prediction);
+
+                    probBox.innerHTML += `
+                        <div style="margin-bottom: 20px; ${isSelected ? 'border-left: 5px solid ' + color + '; padding-left: 10px;' : ''}">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-weight: bold; ${isSelected ? 'font-size: 1.2em; color:' + color : ''}">${cls} ${isSelected ? '(Predicted)' : ''}</span>
+                                <span style="color: #666; font-weight: bold;">${prob}</span>
+                            </div>
+                            <div style="background: #eee; border-radius: 10px; height: 15px; overflow: hidden;">
+                                <div style="background: ${color}; width: ${probVal}%; height: 100%; border-radius: 10px; transition: width 0.8s ease-out;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 4. Update Titles and Plots
+            document.getElementById('cm-title').innerText = `Diagnostic Matrix (${prediction})`;
+            document.getElementById('auc-title').innerText = `AUC Curve for ${prediction}`;
+
+            const ts = new Date().getTime();
+            document.getElementById('cm-img').src = plots.confusion_matrix + "?v=" + ts;
+            document.getElementById('auc-img').src = plots.auc_curve + "?v=" + ts;
+
+        } else {
+            document.querySelector('.container').innerHTML = "<h2>No diagnostic data found. Please analyze an image first.</h2><a href='index.html'>Go Back</a>";
+        }
+    </script>
+</body>
+
+</html>

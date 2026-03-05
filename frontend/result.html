@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🩺 Prediction Result</h1>
+
+        <!-- Patient Image Section -->
+        <div id="patient-image-box" style="margin-bottom: 30px; display: none;">
+            <img id="patient-img" src="" alt=""
+                style="max-width: 300px; border-radius: 10px; border: 2px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        </div>
+
+        <div id="result-container" class="cards">
+            <!-- All cards shown, but we will highlight the active one -->
+            <div class="card no-dr" id="card-No DR">
+                <h3>No DR</h3>
+            </div>
+
+            <div class="card mild" id="card-Mild DR">
+                <h3>Mild DR</h3>
+            </div>
+
+            <div class="card moderate" id="card-Moderate DR">
+                <h3>Moderate DR</h3>
+            </div>
+
+            <div class="card severe" id="card-Severe DR">
+                <h3>Severe DR</h3>
+            </div>
+
+            <div class="card proliferative" id="card-Proliferative DR">
+                <h3>Proliferative DR</h3>
+            </div>
+        </div>
+
+        <!-- Per-Image Confidence Breakdown -->
+        <h2 style="margin-top: 40px;">Detailed Diagnostic Confidence</h2>
+        <div id="prob-breakdown"
+            style="max-width: 600px; margin: 20px auto; text-align: left; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <!-- Bars will be generated here -->
+        </div>
+
+        <div id="report-text"
+            style="margin-top: 20px; text-align: left; background: #f4f4f4; padding: 15px; border-radius: 8px;">
+            <!-- Report details go here -->
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+            <a href="index.html"><button>Analyze Another Image</button></a>
+            <a href="metrics.html"><button style="background: #34495e;">View Overall Image Performance</button></a>
+        </div>
+
+    </div>
+
+    <script>
+        // Retrieve data from Session Storage (set by script.js)
+        const resultData = JSON.parse(sessionStorage.getItem('predictionResult'));
+
+        if (resultData) {
+            const prediction = resultData.prediction;
+            const report = resultData.report;
+            const metrics = resultData.metrics;
+            const plots = resultData.plots;
+            const imageUrl = resultData.image_url;
+            const confidence = resultData.confidence;
+
+            // 0. Handle Patient Image
+            if (imageUrl) {
+                const imgBox = document.getElementById('patient-image-box');
+                const img = document.getElementById('patient-img');
+                img.src = imageUrl;
+                imgBox.style.display = 'block'; // Show only if we have an image
+            }
+
+            // 1. Handle Level Highlighting
+            if (prediction) {
+                const cards = document.querySelectorAll('.card');
+                let found = false;
+                cards.forEach(card => {
+                    if (card.id === 'card-' + prediction) {
+                        card.style.opacity = "1";
+                        card.style.transform = "scale(1.1)";
+                        card.style.border = "3px solid #000";
+                        // Append Confidence
+                        if (confidence) {
+                            card.innerHTML += `<p style="font-weight:bold; margin-top:10px; font-size:1.2em;">Confidence: ${confidence}</p>`;
+                        }
+                        found = true;
+                    } else {
+                        card.style.opacity = "0.4";
+                        card.style.transform = "scale(0.9)";
+                    }
+                });
+
+                if (!found) {
+                    document.getElementById('result-container').innerHTML += `<p style="color:red; width:100%;">unknown level: ${prediction}</p>`;
+                }
+            }
+
+            // 2. Handle Report
+            if (report) {
+                document.getElementById('report-text').innerHTML = `<strong>Report generated:</strong> <a href="${report}" target="_blank">Download PDF</a>`;
+            }
+
+            // 3. Handle Probability Breakdown
+            if (metrics && metrics.probabilities) {
+                const probBox = document.getElementById('prob-breakdown');
+                probBox.innerHTML = "";
+
+                const classColors = {
+                    "No DR": "#2ecc71",
+                    "Mild DR": "#f1c40f",
+                    "Moderate DR": "#e67e22",
+                    "Severe DR": "#e74c3c",
+                    "Proliferative DR": "#c0392b"
+                };
+
+                Object.entries(metrics.probabilities).forEach(([cls, prob]) => {
+                    const probVal = parseFloat(prob);
+                    const color = classColors[cls] || "#3498db";
+                    const isSelected = (cls === prediction);
+
+                    probBox.innerHTML += `
+                        <div style="margin-bottom: 20px; ${isSelected ? 'border-left: 5px solid ' + color + '; padding-left: 10px;' : ''}">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-weight: bold; ${isSelected ? 'font-size: 1.1em; color:' + color : ''}">${cls} ${isSelected ? '(Predicted)' : ''}</span>
+                                <span style="color: #666; font-weight: bold;">${prob}</span>
+                            </div>
+                            <div style="background: #eee; border-radius: 10px; height: 12px; overflow: hidden;">
+                                <div style="background: ${color}; width: ${probVal}%; height: 100%; border-radius: 10px; transition: width 0.5s ease-out;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+        } else {
+            document.querySelector('.container').innerHTML = "<h2>No result data found. Please upload an image first.</h2><a href='index.html'>Go Back</a>";
+        }
+    </script>
+</body>
+
+</html>

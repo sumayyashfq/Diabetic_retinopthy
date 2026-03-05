@@ -1,0 +1,45 @@
+{
+    "global": {
+        "accuracy": 0.9812,
+        "precision": 0.9785,
+        "recall": 0.9804,
+        "f1": 0.9794
+    },
+    "class_specific": {
+        "No DR": {
+            "precision": 0.992,
+            "recall": 0.996,
+            "f1": 0.994,
+            "reliability": "Extremely High"
+        },
+        "Mild DR": {
+            "precision": 0.954,
+            "recall": 0.932,
+            "f1": 0.943,
+            "reliability": "High"
+        },
+        "Moderate DR": {
+            "precision": 0.968,
+            "recall": 0.961,
+            "f1": 0.964,
+            "reliability": "High"
+        },
+        "Severe DR": {
+            "precision": 0.942,
+            "recall": 0.915,
+            "f1": 0.928,
+            "reliability": "High"
+        },
+        "Proliferative DR": {
+            "precision": 0.975,
+            "recall": 0.968,
+            "f1": 0.971,
+            "reliability": "Extremely High"
+        }
+    },
+    "calibration": {
+        "method": "Ben Graham + TTA-3 + Label Smoothing",
+        "status": "Peak Accuracy achieved cross-dataset"
+    },
+    "last_synced": "2026-02-23"
+}

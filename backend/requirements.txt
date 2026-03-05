@@ -1,0 +1,12 @@
+flask
+flask-cors
+torch
+torchvision
+timm
+pillow
+numpy
+reportlab
+pandas
+scikit-learn
+seaborn
+matplotlib
