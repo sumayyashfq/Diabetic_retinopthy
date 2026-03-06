@@ -24,7 +24,7 @@ improved screening and treatment planning.
 ## Technologies used
 - Programming Languages:Python, JavaScript 
 - Deep Learning Frameworks: PyTorch (timm), TensorFlow/Keras 
-- Image Processing Tools: OpenCV, Pillow, Albumentations 
+- Image Processing Tools: OpenCV, Albumentations, Augmentation
 - Web Framework: Flask  
 - Frontend Technologies: HTML5, CSS3, Bootstrap, JavaScript 
 - Development Tools: Jupyter Notebook, Google Colab, GitHub 
