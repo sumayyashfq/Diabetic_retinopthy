@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report History | Diabetic Retinopathy Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .history-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 8px rgba(39, 174, 96, 0.2);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border-color: var(--accent);
+        }
+
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0.3;
+        }
+
+        .report-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .icon-wrapper {
+            background: #f0fdf4;
+            color: var(--accent);
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .report-meta {
+            flex: 1;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .report-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .btn-view {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #219150;
+        }
+
+        .btn-back {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .history-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="history-container">
+        <header>
+            <h1>📁 Report Records</h1>
+            <p class="subtitle">Securely access and manage all your diagnostic case reports.</p>
+        </header>
+
+        <div class="controls">
+            <a href="index.html" class="btn btn-back">← Back to Home</a>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by image name..." onkeyup="filterReports()">
+            </div>
+        </div>
+
+        <div id="reportContainer" class="report-grid">
+            <div class="empty-state">
+                <div class="empty-icon">⏳</div>
+                <p>Loading your reports...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allReports = [];
+
+        async function fetchReports() {
+            try {
+                const response = await fetch('/api/reports');
+                allReports = await response.json();
+                renderReports(allReports);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('reportContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <p style="color:red">Failed to load reports. Is the backend running?</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderReports(reports) {
+            const container = document.getElementById('reportContainer');
+
+            if (reports.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <p>No reports found. Start an analysis to generate one!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(filename => {
+                const displayName = filename.replace('DR_Report_', '').replace('.pdf', '');
+                // Simplified date extraction if possible, or just use filename
+                return `
+                    <div class="report-card">
+                        <div class="report-header">
+                            <div class="icon-wrapper">📄</div>
+                            <div class="report-meta">
+                                <div class="report-title">${displayName}</div>
+                                <div class="report-date">PDF Document</div>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <a href="/reports/${filename}" target="_blank" class="btn btn-view">View Report</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterReports() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allReports.filter(name => name.toLowerCase().includes(query));
+            renderReports(filtered);
+        }
+
+        fetchReports();
+    </script>
+</body>
+
+</html>

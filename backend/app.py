@@ -31,8 +31,10 @@ def serve_uploads(filename):
 
 @app.route("/reports/<path:filename>")
 def serve_reports(filename):
-    # Reports are in backend/reports
-    return send_from_directory("reports", filename)
+    # Reports folder is at the project root
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    report_dir = os.path.join(base_dir, "reports")
+    return send_from_directory(report_dir, filename)
 
 @app.route("/plots/<path:filename>")
 def serve_plots(filename):
@@ -128,8 +130,10 @@ def transform(image):
     return base_transform(image)
 
 def generate_pdf(image_name, prediction, probabilities):
-    os.makedirs("reports", exist_ok=True)
-    filename = f"reports/DR_Report_{image_name}.pdf"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    report_dir = os.path.join(base_dir, "reports")
+    os.makedirs(report_dir, exist_ok=True)
+    filename = os.path.join(report_dir, f"DR_Report_{image_name}.pdf")
 
     c = canvas.Canvas(filename, pagesize=A4)
     w, h = A4
@@ -217,7 +221,8 @@ def generate_pdf(image_name, prediction, probabilities):
     
     c.save()
 
-    return filename
+    # Return only the filename part for the URL
+    return os.path.basename(filename)
 
 # Helper to generate global plots once if they don't exist
 def ensure_global_plots():
@@ -375,6 +380,21 @@ def get_global_metrics():
             "error": "Metrics file not found",
             "status": "Please run train.py to generate performance metrics."
         }), 404
+
+@app.route("/api/reports")
+def list_reports():
+    """List all generated PDF reports from the reports directory."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    report_dir = os.path.join(base_dir, "reports")
+    
+    if not os.path.exists(report_dir):
+        return jsonify([])
+    
+    files = [f for f in os.listdir(report_dir) if f.endswith(".pdf")]
+    # Sort by creation time (newest first)
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(report_dir, x)), reverse=True)
+    
+    return jsonify(files)
 
 if __name__ == "__main__":
     app.run(debug=True)

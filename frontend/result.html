@@ -55,7 +55,8 @@
 
         <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
             <a href="index.html"><button>Analyze Another Image</button></a>
-            <a href="metrics.html"><button style="background: #34495e;">View Overall Image Performance</button></a>
+            <a href="metrics.html"><button style="background: #34495e;">View Performance Details</button></a>
+            <a href="history.html"><button style="background: #27ae60;">📁 Report Records</button></a>
         </div>
 
     </div>
@@ -107,7 +108,9 @@
 
             // 2. Handle Report
             if (report) {
-                document.getElementById('report-text').innerHTML = `<strong>Report generated:</strong> <a href="${report}" target="_blank">Download PDF</a>`;
+                // Ensure path is correct (backend now returns just the filename)
+                const reportUrl = report.startsWith('reports/') ? report : `reports/${report}`;
+                document.getElementById('report-text').innerHTML = `<strong>Report generated:</strong> <a href="${reportUrl}" target="_blank">Download PDF</a>`;
             }
 
             // 3. Handle Probability Breakdown
